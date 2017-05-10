@@ -1,5 +1,5 @@
 #
-# Copyright 2012-2014 Chef Software, Inc.
+# Copyright 2012-2017, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -372,11 +372,18 @@ module Omnibus
     # @param (see #command)
     # @return (see #command)
     #
-    def appbundle(software_name, options = {})
+    def appbundle(software_name, lockdir: nil, **options)
       build_commands << BuildCommand.new("appbundle `#{software_name}'") do
-        app_software = project.softwares.find do |p|
-          p.name == software_name
-        end
+        lockdir ||=
+          begin
+            app_software = project.softwares.find do |p|
+              p.name == software_name
+            end
+            if app_software.nil?
+              raise "could not find software definition for #{software_name}, add a dependency to it, or pass a lockdir argument to appbundle command."
+            end
+            app_software.project_dir
+          end
 
         bin_dir            = "#{install_dir}/bin"
         appbundler_bin     = embedded_bin("appbundler")
@@ -384,7 +391,7 @@ module Omnibus
         # Ensure the main bin dir exists
         FileUtils.mkdir_p(bin_dir)
 
-        shellout!("#{appbundler_bin} '#{app_software.project_dir}' '#{bin_dir}'", options)
+        shellout!("#{appbundler_bin} '#{lockdir}' '#{bin_dir}'", options)
       end
     end
     expose :appbundle
