@@ -374,6 +374,14 @@ module Omnibus
     #
     def appbundle(software_name, lockdir: nil, **options)
       build_commands << BuildCommand.new("appbundle `#{software_name}'") do
+        bin_dir            = "#{install_dir}/bin"
+        appbundler_bin     = embedded_bin("appbundler")
+
+        command = [ "'#{appbundler_bin}'", "'#{lockdir}'", "'#{bin_dir}'" ]
+        # if we pass an explicit path to a Gemfile.lock then the software_name specifies which gem to appbundle out of the lockfile,
+        # otherwise we assume that we're installing the software in the software defn.
+        command << software_name if lockdir
+
         lockdir ||=
           begin
             app_software = project.softwares.find do |p|
@@ -385,13 +393,11 @@ module Omnibus
             app_software.project_dir
           end
 
-        bin_dir            = "#{install_dir}/bin"
-        appbundler_bin     = embedded_bin("appbundler")
 
         # Ensure the main bin dir exists
         FileUtils.mkdir_p(bin_dir)
 
-        shellout!("#{appbundler_bin} '#{lockdir}' '#{bin_dir}'", options)
+        shellout!(command.join(" "), options)
       end
     end
     expose :appbundle
