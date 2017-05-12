@@ -389,7 +389,7 @@ module Omnibus
             app_software.project_dir
           end
 
-        command = [ "'#{appbundler_bin}'", "'#{lockdir}'", "'#{bin_dir}'", gem ]
+        command = [ "'#{appbundler_bin}'", "'#{lockdir}'", "'#{bin_dir}'", "'#{gem}'" ]
 
         # Ensure the main bin dir exists
         FileUtils.mkdir_p(bin_dir)
