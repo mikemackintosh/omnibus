@@ -372,7 +372,7 @@ module Omnibus
     # @param (see #command)
     # @return (see #command)
     #
-    def appbundle(software_name, lockdir: nil, gem: nil, **options)
+    def appbundle(software_name, lockdir: nil, gem: nil, without: nil, **options)
       build_commands << BuildCommand.new("appbundle `#{software_name}'") do
         bin_dir            = "#{install_dir}/bin"
         appbundler_bin     = embedded_bin("appbundler")
@@ -390,6 +390,8 @@ module Omnibus
           end
 
         command = [ appbundler_bin, "'#{lockdir}'", "'#{bin_dir}'", "'#{gem}'" ]
+
+        command << [ "--without", without.join(",") ] unless without.nil?
 
         # Ensure the main bin dir exists
         FileUtils.mkdir_p(bin_dir)
