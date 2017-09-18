@@ -324,6 +324,25 @@ module Omnibus
       conflicts.dup
     end
     expose :conflict
+    
+    #
+    # Add to the list of packages this one breaks.
+    #
+    # @example
+    #   breaks 'foo'
+    #   breaks 'bar'
+    #
+    # @param [String] val
+    #   the break to add
+    #
+    # @return [Array<String>]
+    #   the list of breaks
+    #
+    def break(val)
+      breaks << val
+      breaks.dup
+    end
+    expose :conflict
 
     #
     # Set or retrieve the version of the project.
