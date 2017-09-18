@@ -294,6 +294,7 @@ module Omnibus
           section:        section,
           conflicts:      project.conflicts,
           replaces:       project.replaces,
+          breaks:         project.breaks,
           dependencies:   project.runtime_dependencies,
         }
       )
